@@ -17,7 +17,7 @@ class GlassBoxWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: Container(
+      child: SizedBox(
         width: width,
         height: height,
         child: Stack(

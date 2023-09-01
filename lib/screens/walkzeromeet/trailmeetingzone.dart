@@ -1,6 +1,8 @@
 //import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:walkzero/constwidget/reusewidget.dart';
+import 'package:walkzero/screens/walkzeromeet/meetpage.dart';
 import 'package:walkzero/screens/walkzeromeet/web_rtc.dart';
 
 class MeetingHomePage extends StatefulWidget {
@@ -15,11 +17,12 @@ class MeetingHomePageState extends State<MeetingHomePage> {
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   String? roomId;
-  TextEditingController textEditingController = TextEditingController(text: '');
+  TextEditingController joinRoomIdController = TextEditingController(text: '');
 
   final selectedAll = EmployeeNameList(name: 'Select All');
   // bool _multiSelected = false;
   bool isContainerVisible = false;
+  bool isJoinRoomVisiable = false;
 
   final emloyeeNameList = [
     EmployeeNameList(name: 'Kishore'),
@@ -27,32 +30,10 @@ class MeetingHomePageState extends State<MeetingHomePage> {
     EmployeeNameList(name: 'Gokul')
   ];
 
-  @override
-  void initState() {
-    _localRenderer.initialize();
-    // _remoteRenderer.initialize();
-
-    signaling.openUserMedia(_localRenderer, _remoteRenderer);
-
-    signaling.onAddRemoteStream = ((stream) {
-      _remoteRenderer.srcObject = stream;
-      setState(() {});
-    });
-
-    super.initState();
-  }
-
   void _toggleContainerVisibility() {
     setState(() {
       isContainerVisible = !isContainerVisible;
     });
-  }
-
-  @override
-  void dispose() {
-    _localRenderer.dispose();
-    _remoteRenderer.dispose();
-    super.dispose();
   }
 
   @override
@@ -65,94 +46,101 @@ class MeetingHomePageState extends State<MeetingHomePage> {
       body: Column(
         children: [
           const SizedBox(height: 8),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // ElevatedButton(
-                //   onPressed: () {
-                //     //signaling.openUserMedia(_localRenderer, _remoteRenderer);
-                //   },
-                //   child: const Text("Open camera & microphone"),
-                // ),
-                // const SizedBox(
-                //   width: 8,
-                // ),
-                ElevatedButton(
-                  onPressed: () async {
-                    // const AlertDialog(
-                    //   title: Text('trail'),
-                    // );
-                    _toggleContainerVisibility();
-
-                    // roomId = await signaling.createRoom(_remoteRenderer);
-                    // textEditingController.text = roomId!;
-                    // setState(() {});
-                  },
-                  child: const Text("Create room"),
-                ),
-
-                const SizedBox(
-                  width: 8,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Add roomId
-                    signaling.joinRoom(
-                      textEditingController.text.trim(),
-                      _remoteRenderer,
-                    );
-                  },
-                  child: const Text("Join room"),
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    signaling.hangUp(_localRenderer);
-                  },
-                  child: const Text("Hangup"),
-                )
-              ],
-            ),
-          ),
-          if (isContainerVisible) Center(child: createRoom()),
-          const SizedBox(height: 8),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: RTCVideoView(_localRenderer, mirror: true)),
-                  Expanded(child: RTCVideoView(_remoteRenderer)),
-                ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  roomId = await signaling.createRoom(_remoteRenderer);
+                  //_toggleContainerVisibility();
+                  showModalSheet();
+                },
+                child: const Text("Create room"),
               ),
-            ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isJoinRoomVisiable = !isJoinRoomVisiable;
+                  });
+                  // Add roomId
+                },
+                child: const Text("Join room"),
+              ),
+              // const SizedBox(width: 8),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     signaling.hangUp(_localRenderer);
+              //   },
+              //   child: const Text("Hangup"),
+              // )
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Join the following Room: "),
-                Flexible(
-                  child: TextFormField(
-                    controller: textEditingController,
-                  ),
-                )
-              ],
-            ),
-          ),
-          const SizedBox(height: 8)
+          if (isContainerVisible)
+            Center(heightFactor: 1.5, child: createRooms()),
+          const SizedBox(height: 8),
+          if (isJoinRoomVisiable) Center(heightFactor: 5, child: joinRooms()),
         ],
       ),
     );
   }
 
-  Widget createRoom() {
+  Widget joinRooms() {
+    return Container(
+      width: 300,
+      height: 120,
+      decoration: BoxDecoration(
+          border: Border.all(), borderRadius: BorderRadius.circular(15)),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                const Text(
+                  "Enter Room Id: ",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Flexible(
+                  child: TextFormField(
+                    controller: joinRoomIdController,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: TextButton(
+                onPressed: () {
+                  if (joinRoomIdController.text.isNotEmpty) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => MeetPage(
+                              localRenderer: _localRenderer,
+                              remoteRenderer: _remoteRenderer,
+                                  roomId: joinRoomIdController.text,
+                                  
+                                )));
+                    signaling.joinRoom(
+                        joinRoomIdController.text.trim(), _remoteRenderer);
+                    setState(() {
+                      isJoinRoomVisiable = !isJoinRoomVisiable;
+                    });
+                  } else {
+                    ReuseWidget()
+                        .snackBarMessage(context, "Please enter room Id");
+                  }
+                },
+                child: const Text('ok')),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget createRooms() {
     return Center(
       child: Container(
         width: 300,
@@ -177,39 +165,27 @@ class MeetingHomePageState extends State<MeetingHomePage> {
                 children: [
                   ListTile(
                     onTap: () {
-                      final newValue = !selectedAll.value;
-                      setState(() {
-                        emloyeeNameList.forEach((element) {
-                          element.value = newValue;
-                        });
-                        selectedAll.value = !selectedAll.value;
-                      });
+                      isAllSelected(selectedAll);
                     },
                     leading: Checkbox(
                       shape: const CircleBorder(),
                       value: selectedAll.value,
                       onChanged: (value) {
-                        setState(() {
-                          selectedAll.value = !selectedAll.value;
-                        });
+                        isAllSelected(selectedAll);
                       },
                     ),
-                    title: const Text('Selected All'),
+                    title: Text(selectedAll.name),
                   ),
                   const Divider(),
                   ...emloyeeNameList
                       .map(
                         (item) => ListTile(
-                          onTap: () => setState(() {
-                            item.value = !item.value;
-                          }),
+                          onTap: () => isSingleSelected(item),
                           leading: Checkbox(
                             shape: const CircleBorder(),
                             value: item.value,
                             onChanged: (value) {
-                              setState(() {
-                                item.value = !item.value;
-                              });
+                              isSingleSelected(item);
                             },
                           ),
                           title: Text(item.name),
@@ -231,9 +207,20 @@ class MeetingHomePageState extends State<MeetingHomePage> {
                       child: const Text('cancel')),
                   ElevatedButton.icon(
                       onPressed: () async {
-                        roomId = await signaling.createRoom(_remoteRenderer);
-                        textEditingController.text = roomId!;
-                        setState(() {});
+                        //roomId = await signaling.createRoom(_remoteRenderer);
+                        //textEditingController.text = roomId!;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => MeetPage(
+                                   localRenderer: _localRenderer,
+                              remoteRenderer: _remoteRenderer,
+                                      roomId: roomId!,
+                                      // joinRoom: false,
+                                    )));
+                        setState(() {
+                          isContainerVisible = !isContainerVisible;
+                        });
                       },
                       icon: const Icon(Icons.send),
                       label: const Text('Send Id')),
@@ -244,6 +231,108 @@ class MeetingHomePageState extends State<MeetingHomePage> {
         ),
       ),
     );
+  }
+
+  showModalSheet() {
+    showModalBottomSheet<void>(
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 220,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(Icons.link),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text('Get a meeting link to share'),
+                  ],
+                ),
+                onTap: () async {},
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(Icons.video_call),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text('Start an instant meeting'),
+                  ],
+                ),
+                onTap: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => MeetPage(
+                             localRenderer: _localRenderer,
+                              remoteRenderer: _remoteRenderer,
+                                roomId: roomId!,
+                                // joinRoom: false,
+                              )));
+                  //Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(Icons.calendar_month),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text('Schedule in Google Calender'),
+                  ],
+                ),
+                onTap: () async {},
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(Icons.close),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text('Close'),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  isAllSelected(EmployeeNameList valueItem) {
+    setState(() {
+      emloyeeNameList.forEach((element) {
+        element.value = !valueItem.value;
+      });
+      valueItem.value = !valueItem.value;
+    });
+  }
+
+  isSingleSelected(EmployeeNameList valueItem) {
+    setState(() {
+      valueItem.value = !valueItem.value;
+
+      if (!valueItem.value) {
+        selectedAll.value = false;
+      } else {
+        final allSingleSelected =
+            emloyeeNameList.every((element) => element.value);
+        selectedAll.value = allSingleSelected;
+      }
+    });
   }
 }
 

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-typedef void StreamStateCallback(MediaStream stream);
+typedef StreamStateCallback = void Function(MediaStream stream);
 
 class Signaling {
   Map<String, dynamic> configuration = {
@@ -20,6 +20,7 @@ class Signaling {
   RTCPeerConnection? peerConnection;
   MediaStream? localStream;
   MediaStream? remoteStream;
+  MediaStream? screenShareStream;
   String? roomId;
   String? currentRoomText;
   StreamStateCallback? onAddRemoteStream;
@@ -179,6 +180,26 @@ class Signaling {
           );
         });
       });
+    }
+  }
+
+  Future<void> shareScreening(
+    RTCVideoRenderer screenShareVideo,
+  ) async {
+    print('check condition');
+    try {
+      print('check condition2');
+      var mediaConstraints = <String, dynamic>{'video': true, 'audio': true};
+      var stream =
+          await navigator.mediaDevices.getDisplayMedia(mediaConstraints);
+      print('check condition2');
+
+      localStream = stream;
+      screenShareVideo.srcObject = localStream;
+
+      // ;p[]
+    } catch (e) {
+      print("error : ${e.toString()}");
     }
   }
 

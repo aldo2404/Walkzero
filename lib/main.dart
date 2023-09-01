@@ -1,18 +1,31 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+//import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
 import 'package:walkzero/constwidget/thememode.dart';
+import 'package:walkzero/screens/homescreen.dart';
+//import 'package:walkzero/screens/loginpage/loginpage.dart';
 //import 'package:walkzero/screens/loginflow/loginpage.dart';
-import 'package:walkzero/screens/passwordreset/resetpassword.dart';
+//import 'package:walkzero/screens/passwordreset/resetpassword.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await Firebase.initializeApp();
+  //WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+  if (WebRTC.platformIsDesktop) {
+    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  } else if (WebRTC.platformIsAndroid) {
+    WidgetsFlutterBinding.ensureInitialized();
+    WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+    await Firebase.initializeApp();
+  }
+  SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
+      .then((_) => runApp(const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -54,8 +67,8 @@ class _NativeSplashscreenState extends State<NativeSplashscreen> {
       Future.delayed(const Duration(seconds: 2)).then((value) {
         FlutterNativeSplash.remove();
       });
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const PasswordResetPage()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
     });
   }
 

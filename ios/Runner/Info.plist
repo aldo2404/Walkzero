@@ -33,6 +33,10 @@
         <string>$(PRODUCT_NAME) Camera Usage!</string>
         <key>NSMicrophoneUsageDescription</key>
         <string>$(PRODUCT_NAME) Microphone Usage!</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+        <string>Save video in gallery</string>
+        <key>NSMicrophoneUsageDescription</key>
+        <string>Save audio in video</string>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
 			<string>UIInterfaceOrientationLandscapeLeft</string>

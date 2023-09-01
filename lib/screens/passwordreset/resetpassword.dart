@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +17,6 @@ class PasswordResetPage extends StatefulWidget {
 }
 
 class _PasswordResetPageState extends State<PasswordResetPage> {
-  String? _initialLink;
   final confirmPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
 
@@ -27,7 +24,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   bool confirmPassVisibility = false;
   bool errorText = false;
 
-  String x_account_id = "58e2793f-9e43-438f-ae0d-0c31a3b479f5";
+  String xAccountId = "58e2793f-9e43-438f-ae0d-0c31a3b479f5";
 
   Dio dio = Dio();
   String userId = "70f2265e-de31-4e5a-89a9-5b23717fbc32";
@@ -43,17 +40,15 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     try {
       // Get the initial link when the app is first opened via a deep link
       String? link = await getInitialLink();
-      print('link: $link');
+      //print('link: $link');
 
-      setState(() {
-        _initialLink = link;
-      });
+      setState(() {});
       _handleDeepLink(link);
 
       // You can also set up a stream to listen for future deep links
-      getUriLinksStream().listen((Uri? uri) {
-        _handleDeepLink(uri?.toString());
-      });
+      // getUriLinksStream().listen((Uri? uri) {
+      //   _handleDeepLink(uri?.toString());
+      // });
     } on PlatformException {
       // Handle exception, if any
     }
@@ -66,10 +61,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
       String? token = uri.queryParameters['token'];
 
       if (token != null) {
-        // Use the extracted token for password reset
-        print('Reset password token: $token');
-        // You can now navigate to the password reset screen with the token
-        // For example:
+        //print('Reset password token: $token');
+
         // Navigator.push(
         //   context,
         //   MaterialPageRoute(builder: (context) => PasswordResetScreen(token: token)),
@@ -79,7 +72,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   }
 
   void setPasswordPost() async {
-    dio.options.headers = {'x-account-id': x_account_id};
+    dio.options.headers = {'x-account-id': xAccountId};
 
     String setPassword = r'''
  mutation setPassword ($input: SetPasswordInput!) {
@@ -116,26 +109,26 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           data: {'query': setPassword, 'variables': variables});
 
       if (response.statusCode == 200) {
-        print(response.data['password']);
+        //print(response.data['password']);
         if (response.data['data'] != null &&
             response.data['password'] == response.data['confirm_password']) {
           Navigator.push(
-              context, MaterialPageRoute(builder: (_) => HomeScreen()));
+              context, MaterialPageRoute(builder: (_) => const HomeScreen()));
         } else {
           ReuseWidget().snackBarMessage(
               context, response.data['errors'][0]['error'][0].toString());
 
           // ReuseWidget().snackBarMessage(context,
           //     response.data['errors'][0]['confirm_password'][0].toString());
-          print(response.data['errors'][0]['error'][0].toString());
+          // print(response.data['errors'][0]['error'][0].toString());
         }
 
-        print('success');
+        // print('success');
       } else {
-        print(response.statusCode);
+        //print(response.statusCode);
       }
     } catch (e) {
-      print('error: ${e.toString()}');
+      //print('error: ${e.toString()}');
     }
   }
 
@@ -228,148 +221,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   ),
                 ),
               ),
-            )
-
-            // Stack(
-            //   children: [
-
-            //     Center(
-            //       child: Container(
-            //         width: MediaQuery.of(context).size.width * 0.9,
-            //         height: 300,
-            //         decoration: BoxDecoration(
-            //             border: Border.all(color: Colors.black26),
-            //             borderRadius: BorderRadius.circular(20),
-            //             boxShadow: [
-            //               // const BoxShadow(
-            //               //   color: Colors.black12,
-            //               // ),
-            //               BoxShadow(
-            //                   color: Colors.black12,
-            //                   spreadRadius: 0.0,
-            //                   blurRadius: 0.0,
-            //                   offset: Offset(5, 2)),
-            //             ]),
-            //         child: Stack(
-            //           children: [
-            //             // BackdropFilter(
-            //             //   filter: ImageFilter.blur(
-            //             //     sigmaX: 4.0,
-            //             //     sigmaY: 4.0,
-            //             //   ),
-            //             //   child: Container(),
-            //             // ),
-            //             Center(
-            //               child: Column(
-            //                 mainAxisAlignment: MainAxisAlignment.center,
-            //                 children: [
-            //                   const ListTile(
-            //                     title: Text('Set New Password'),
-            //                     subtitle: Text('change only never Change'),
-            //                   ),
-            //                   ReuseTextField(
-            //                     controller: newPasswordController,
-            //                     hintText: "New password",
-            //                     obscureText: newPassVisibility,
-            //                     suffixIcon: InkWell(
-            //                         onTap: () {
-            //                           setState(() {
-            //                             newPassVisibility = !newPassVisibility;
-            //                           });
-            //                         },
-            //                         child: newPassVisibility
-            //                             ? const Icon(Icons.visibility_off)
-            //                             : const Icon(Icons.visibility)),
-            //                   ),
-            //                   const SizedBox(height: 10),
-            //                   ReuseTextField(
-            //                     controller: confirmPasswordController,
-            //                     hintText: "Confirm password",
-            //                     obscureText: confirmPassVisibility,
-            //                     helperText: '',
-            //                     suffixIcon: InkWell(
-            //                         onTap: () {
-            //                           setState(() {
-            //                             confirmPassVisibility =
-            //                                 !confirmPassVisibility;
-            //                           });
-            //                         },
-            //                         child: confirmPassVisibility
-            //                             ? const Icon(Icons.visibility_off)
-            //                             : const Icon(Icons.visibility)),
-            //                     validator: ((value) {
-            //                       if (value != newPasswordController.text) {
-            //                         return "Password not match";
-            //                       }
-            //                       return null;
-            //                     }),
-            //                   ),
-            //                   Padding(
-            //                     padding: const EdgeInsets.fromLTRB(30, 10, 30, 0),
-            //                     child: ReuseButtonField()
-            //                         .elavatedButton(context, 'Reset Password', () {
-            //                       if (confirmPasswordController.text.isNotEmpty) {
-            //                         setPasswordPost();
-            //                         if (newPasswordController.text ==
-            //                             confirmPasswordController.text) {
-            //                         } else {
-            //                           ReuseWidget().snackBarMessage(
-            //                               context, 'Password does not match');
-            //                         }
-            //                       } else {
-            //                         ReuseWidget().snackBarMessage(
-            //                             context, 'Enter Password ');
-            //                       }
-            //                     }),
-            //                   )
-            //                 ],
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
-            ),
+            )),
       ),
     );
-  }
-
-  void callGraphqlAPI(input) async {
-    String graphqlEndpoint = "https://api.walkzero.com/graphql";
-    String token1 = 'hi';
-    String token = token1;
-    Dio dio = Dio();
-    dio.options.headers = {
-      'Authorization': 'Bearer ${token}',
-      'Content-Type': 'application/json',
-    };
-
-    String query = '''
-query {
- checkDomain(input:'${input}') {
- url,
- accountId
-}
-}
-''';
-    String email = newPasswordController.text;
-    Map<String, dynamic> variables = {
-      'input': {'new password': email}
-    };
-
-    try {
-      Response response = await dio.post(graphqlEndpoint,
-          data: {'query': query, 'variables': variables});
-
-      if (response.statusCode == 200) {
-        print("Response data: ${response.data}");
-      } else {
-        print("Error: ${response.statusCode} - ${response.data}");
-      }
-    } catch (e) {
-      print("error:${e.toString()}");
-    }
   }
 }

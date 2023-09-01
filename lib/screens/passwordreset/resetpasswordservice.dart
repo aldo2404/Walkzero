@@ -14,10 +14,10 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
+class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   Uri? _initialUri;
   Uri? _latestUri;
   Object? _err;
@@ -50,14 +50,14 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       // the foreground or in the background.
       _sub = uriLinkStream.listen((Uri? uri) {
         if (!mounted) return;
-        print('got uri: $uri');
+        // print('got uri: $uri');
         setState(() {
           _latestUri = uri;
           _err = null;
         });
       }, onError: (Object err) {
         if (!mounted) return;
-        print('got err: $err');
+        //print('got err: $err');
         setState(() {
           _latestUri = null;
           if (err is FormatException) {
@@ -87,18 +87,18 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       try {
         final uri = await getInitialUri();
         if (uri == null) {
-          print('no initial uri');
+          // print('no initial uri');
         } else {
-          print('got initial uri: $uri');
+          // print('got initial uri: $uri');
         }
         if (!mounted) return;
         setState(() => _initialUri = uri);
       } on PlatformException {
         // Platform messages may fail but we ignore the exception
-        print('falied to get initial uri');
+        //print('falied to get initial uri');
       } on FormatException catch (err) {
         if (!mounted) return;
-        print('malformed initial uri');
+        //print('malformed initial uri');
         setState(() => _err = err);
       }
     }
@@ -198,7 +198,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
               '(tap on any of the above commands to print it to'
               ' the console/logger and copy to the device clipboard.)',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.caption,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ]
         ].expand((el) => el).toList(),
@@ -215,7 +215,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 
   Future<void> _printAndCopy(String cmd) async {
-    print(cmd);
+    //print(cmd);
 
     await Clipboard.setData(ClipboardData(text: cmd));
     ScaffoldMessenger.of(context).showSnackBar(
