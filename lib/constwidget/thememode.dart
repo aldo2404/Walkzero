@@ -21,5 +21,9 @@ class MyThemes {
   static final lightTheme = ThemeData(
     scaffoldBackgroundColor: Colors.white,
     colorScheme: const ColorScheme.light(),
+    inputDecorationTheme: InputDecorationTheme(
+      focusColor: Colors.green.shade500,
+      iconColor: Colors.green.shade500,
+    ),
   );
 }

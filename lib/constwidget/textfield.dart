@@ -7,7 +7,8 @@ class ReuseTextField extends StatelessWidget {
   String? hintText;
   Widget? prefixIcon;
   Widget? suffixIcon;
-  bool? obscureText;
+  String? helperText;
+  bool obscureText;
   FormFieldValidator? validator;
 
   ReuseTextField({
@@ -16,26 +17,30 @@ class ReuseTextField extends StatelessWidget {
     this.hintText,
     this.prefixIcon,
     this.suffixIcon,
-    this.obscureText,
+    this.obscureText = false,
+    this.helperText,
     this.validator,
   });
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
       child: TextFormField(
         validator: validator,
-        obscureText: obscureText!,
+        obscureText: obscureText,
         controller: controller,
         decoration: InputDecoration(
           prefixIcon: prefixIcon,
           suffixIcon: suffixIcon,
-          helperText: '',
+          helperText: helperText,
           hintText: hintText,
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.green.shade300)),
+          focusColor: Theme.of(context).focusColor,
           hintStyle: const TextStyle(fontSize: subtitleSize),
-          contentPadding: const EdgeInsets.fromLTRB(10, 4, 0, 4),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(6)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide()),
         ),
       ),

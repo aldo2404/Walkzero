@@ -1,12 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:walkzero/constwidget/thememode.dart';
-import 'package:walkzero/screens/loginpage.dart';
+//import 'package:walkzero/screens/loginflow/loginpage.dart';
+import 'package:walkzero/screens/passwordreset/resetpassword.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Firebase.initializeApp();
 
   runApp(const MyApp());
 }
@@ -51,7 +55,7 @@ class _NativeSplashscreenState extends State<NativeSplashscreen> {
         FlutterNativeSplash.remove();
       });
       Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
+          MaterialPageRoute(builder: (context) => const PasswordResetPage()));
     });
   }
 

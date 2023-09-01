@@ -39,7 +39,7 @@ class Signaling {
     });
 
     // Code for collecting ICE candidates below
-    var callerCandidatesCollection = roomRef.collection('callerCandidates');
+    var callerCandidatesCollection = roomRef.collection('callerCandidate');
 
     peerConnection?.onIceCandidate = (RTCIceCandidate candidate) {
       print('Got candidate: ${candidate.toMap()}');
@@ -88,7 +88,7 @@ class Signaling {
     // Listening for remote session description above
 
     // Listen for remote Ice candidates below
-    roomRef.collection('calleeCandidates').snapshots().listen((snapshot) {
+    roomRef.collection('calleeCandidate').snapshots().listen((snapshot) {
       snapshot.docChanges.forEach((change) {
         if (change.type == DocumentChangeType.added) {
           Map<String, dynamic> data = change.doc.data() as Map<String, dynamic>;
@@ -111,7 +111,7 @@ class Signaling {
   Future<void> joinRoom(String roomId, RTCVideoRenderer remoteVideo) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     print(roomId);
-    DocumentReference roomRef = db.collection('rooms').doc('$roomId');
+    DocumentReference roomRef = db.collection('rooms').doc(roomId);
     var roomSnapshot = await roomRef.get();
     print('Got room ${roomSnapshot.exists}');
 
@@ -126,7 +126,7 @@ class Signaling {
       });
 
       // Code for collecting ICE candidates below
-      var calleeCandidatesCollection = roomRef.collection('calleeCandidates');
+      var calleeCandidatesCollection = roomRef.collection('calleeCandidate');
       peerConnection!.onIceCandidate = (RTCIceCandidate? candidate) {
         if (candidate == null) {
           print('onIceCandidate: complete!');
@@ -165,7 +165,7 @@ class Signaling {
       // Finished creating SDP answer
 
       // Listening for remote ICE candidates below
-      roomRef.collection('callerCandidates').snapshots().listen((snapshot) {
+      roomRef.collection('callerCandidate').snapshots().listen((snapshot) {
         snapshot.docChanges.forEach((document) {
           var data = document.doc.data() as Map<String, dynamic>;
           print(data);
@@ -187,7 +187,7 @@ class Signaling {
     RTCVideoRenderer remoteVideo,
   ) async {
     var stream = await navigator.mediaDevices
-        .getUserMedia({'video': true, 'audio': false});
+        .getUserMedia({'video': true, 'audio': true});
 
     localVideo.srcObject = stream;
     localStream = stream;
@@ -209,10 +209,10 @@ class Signaling {
     if (roomId != null) {
       var db = FirebaseFirestore.instance;
       var roomRef = db.collection('rooms').doc(roomId);
-      var calleeCandidates = await roomRef.collection('calleeCandidates').get();
+      var calleeCandidates = await roomRef.collection('calleeCandidate').get();
       calleeCandidates.docs.forEach((document) => document.reference.delete());
 
-      var callerCandidates = await roomRef.collection('callerCandidates').get();
+      var callerCandidates = await roomRef.collection('callerCandidate').get();
       callerCandidates.docs.forEach((document) => document.reference.delete());
 
       await roomRef.delete();

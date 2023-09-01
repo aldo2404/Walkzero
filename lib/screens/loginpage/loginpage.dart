@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ReuseButtonField().elavatedButton(context, () {
+                    ReuseButtonField().elavatedButton(context, 'Login', () {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

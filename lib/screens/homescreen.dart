@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:provider/provider.dart';
 import 'package:walkzero/constwidget/thememode.dart';
 import 'package:walkzero/models/drawermodels.dart';
 import 'package:walkzero/screens/constants.dart';
-import 'package:walkzero/screens/loginpage.dart';
-import 'package:walkzero/screens/meetingzone.dart';
-import 'package:walkzero/screens/trailmeetingzone.dart';
+import 'package:walkzero/screens/loginpage/loginpage.dart';
+//import 'package:walkzero/screens/meetingzone.dart';
+import 'package:walkzero/screens/walkzeromeet/trailmeetingzone.dart';
+import 'package:walkzero/screens/walkzeromeet/web_rtc.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +17,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Signaling signaling = Signaling();
+  //final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
+
+  @override
+  void initState() {
+    //_localRenderer.initialize();
+    //_remoteRenderer.initialize();
+
+    signaling.onAddRemoteStream = ((stream) {
+      _remoteRenderer.srcObject = stream;
+      setState(() {});
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           )),
           drawerList(Icons.video_camera_front_rounded, 'Walkzero Meet', () {
+            //signaling.openUserMedia(_localRenderer, _remoteRenderer);
             Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const MeetingHomePage()));
           }),

@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:walkzero/screens/constants.dart';
 
 class ReuseButtonField {
-  elavatedButton(BuildContext context, Function() onPressed) {
+  elavatedButton(
+    BuildContext context,
+    String text,
+    Function()? onPressed,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
@@ -12,10 +16,10 @@ class ReuseButtonField {
               backgroundColor: MaterialStateProperty.all(buttonColor),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)))),
+                      borderRadius: BorderRadius.circular(20)))),
           onPressed: onPressed,
           child: Text(
-            'Login',
+            text,
             style: TextStyle(fontSize: buttonText),
           ),
         ),
@@ -108,7 +112,7 @@ class MeetingOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 60,
-      color: Color.fromRGBO(46, 46, 46, 1),
+      color: const Color.fromRGBO(46, 46, 46, 1),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
